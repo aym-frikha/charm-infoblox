@@ -1,0 +1,13 @@
+options:
+  infoblox-user:
+    type: string
+    default:
+    description: "Infoblox service account user"
+  infoblox-password:
+    type: string
+    default:
+    description: "Service account password"
+  string-option:
+    type: string
+    default:
+    description: "A short description of the configuration option"
