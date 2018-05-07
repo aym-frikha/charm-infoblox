@@ -1,13 +1,103 @@
 options:
-  infoblox-user:
+  keystone_auth_uri:
     type: string
     default:
-    description: "Infoblox service account user"
-  infoblox-password:
+    description: |
+      Openstack keystone authentication uri.
+  keystone_admin_username:
     type: string
     default:
-    description: "Service account password"
-  string-option:
+    description: |
+      Openstack keystone admin username.
+  keystone_admin_password:
     type: string
     default:
-    description: "A short description of the configuration option"
+    description: |
+      Password of keystone admin user.
+  keystone_auth_version:
+    type: string
+    default:
+    description: |
+      Openstack keystone version.
+  keystone_admin_tenant_name:
+    type: string
+    default:
+    description: |
+      Tenant name of keystone admin user.
+  keystone_admin_user_domain_id:
+    type: string
+    default:
+    description: |
+      User Domain Id of keystone admin user.
+  keystone_admin_project_name:
+    type: string
+    default:
+    description: |
+      Project name of keystone admin user
+  keystone_admin_project_domain_id:
+    type: string
+    default:
+    description: |
+      Project Domain Id of keystone admin user
+  keystone_admin_domain_id:
+    type: string
+    default:
+    description: |
+      Domain Id of keystone admin user
+  cloud_data_center_id:
+    type: string
+    default:
+    description: |
+      An integer ID used for the data center. This is used to form the stanza
+      name for the rest of the options. If you have multiple instances of
+      OpenStack sharing the same Infoblox grid, this ID needs to be unique
+      across the instances. The ID should start from 1 and increment by 1 as
+      you add another Openstack instance. This ID is used to generate a unique
+      ID for a network view that is cached in neutron database. Starting it
+      with a very high number may exceed the max length of a network view id.
+  grid_master_host:
+    type: string
+    default:
+    description: |
+      The IP address, hostname, or FQDN of the Grid Master (GM). Proxying is
+      supported so this does not have to be the exact IP or hostname of the GM
+      if you have a situation where you cannot reach the GM directly in your
+      network. It can be any connection information that proxies to the GM.
+  grid_master_name:
+    type: string
+    default:
+    description: |
+      The name of the Grid Master (GM) This has to be the exact GM name
+      registered in the Infoblox grid.
+  admin_user_name:
+    type: string
+    default:
+    description: |
+      The user name to use for the WAPI.
+  admin_password:
+    type: string
+    default:
+    description: |
+      The password to use for the WAPI.
+  wapi_version:
+    type: string
+    default:
+    description: |
+      The WAPI version to use. WAPI Version 2.3 or later is supported.
+      (NIOS version 7.3.x or later is supported)
+  wapi_max_results:
+    type: string
+    default:
+    description: |
+      The maximum number of objects to be returned by WAPI. If this is set to
+      a negative number, WAPI will return an error when the number of returned
+      objects would exceed the setting. If this is set to a positive number,
+      the results will be truncated when necessary. The default is -1000.
+      If you experience "Result set too large" error, increase this value.
+  wapi_paging:
+    type: string
+    default:
+    description: |
+      Enables paging to wapi calls by configuring wapi_paging = True, it uses
+      wapi_max_results to set paging size of the wapi calls. If wapi_max_results
+      is negative it will take paging size as 1000. The default is False
