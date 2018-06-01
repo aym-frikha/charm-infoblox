@@ -1,0 +1,6 @@
+
+repo: https://github.com/mskalka/charm-infoblox.git
+includes:
+  - 'layer:basic'
+  - 'interface:neutron-plugin-api-subordinate'
+  - 'interface:designate'

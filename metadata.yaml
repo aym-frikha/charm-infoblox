@@ -6,6 +6,13 @@ description: |
 tags:
   - misc
 subordinate: true
+series:
+  - xenial
+  - bionic
 provides:
-  infoblox-service:
-    interface: infoblox-service
+  neutron-plugin-api-subordinate:
+    interface: neutron-plugin-api-subordinate
+    scope: container
+  external-dns:
+    interface: designate
+    scope: container

@@ -1,49 +1,4 @@
 options:
-  keystone_auth_uri:
-    type: string
-    default:
-    description: |
-      Openstack keystone authentication uri.
-  keystone_admin_username:
-    type: string
-    default:
-    description: |
-      Openstack keystone admin username.
-  keystone_admin_password:
-    type: string
-    default:
-    description: |
-      Password of keystone admin user.
-  keystone_auth_version:
-    type: string
-    default:
-    description: |
-      Openstack keystone version.
-  keystone_admin_tenant_name:
-    type: string
-    default:
-    description: |
-      Tenant name of keystone admin user.
-  keystone_admin_user_domain_id:
-    type: string
-    default:
-    description: |
-      User Domain Id of keystone admin user.
-  keystone_admin_project_name:
-    type: string
-    default:
-    description: |
-      Project name of keystone admin user
-  keystone_admin_project_domain_id:
-    type: string
-    default:
-    description: |
-      Project Domain Id of keystone admin user
-  keystone_admin_domain_id:
-    type: string
-    default:
-    description: |
-      Domain Id of keystone admin user
   cloud_data_center_id:
     type: string
     default:
