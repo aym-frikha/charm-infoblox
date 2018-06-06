@@ -6,6 +6,14 @@ description: |
 tags:
   - misc
 subordinate: true
+series:
+  - xenial
+  - bionic
 provides:
-  infoblox-service:
-    interface: infoblox-service
+  infoblox-api:
+    interface: infoblox-api
+    scope: container
+requires:
+  container:
+    interface: juju-info
+    scope: container
