@@ -10,9 +10,10 @@ series:
   - xenial
   - bionic
 provides:
-  neutron-plugin-api-subordinate:
-    interface: neutron-plugin-api-subordinate
+  infoblox-api:
+    interface: infoblox-api
     scope: container
-  external-dns:
-    interface: designate
+requires:
+  container:
+    interface: juju-info
     scope: container
