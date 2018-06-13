@@ -1,0 +1,19 @@
+name: infoblox
+summary: InfoBlox OpenStack integration
+maintainer: Michael Skalka <Michael.Skalka@mskalka>
+description: |
+
+tags:
+  - misc
+subordinate: true
+series:
+  - xenial
+  - bionic
+provides:
+  infoblox-neutron:
+    interface: infoblox
+    scope: container
+requires:
+  container:
+    interface: juju-info
+    scope: container
