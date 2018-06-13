@@ -40,7 +40,7 @@ def install_libraries():
         status_set('active', 'Unit is ready')
 
 
-@reactive.when('infoblox-api.connected')
+@reactive.when('infoblox-neutron.connected')
 def configure_neutron_plugin(api_principle):
     with charm.provide_charm_instance() as charm_class:
         log('Setting neutron-api configuration')
@@ -53,5 +53,13 @@ def configure_neutron_plugin(api_principle):
                'wapi_max_results': config('wapi-max-results'),
                'wapi_paging': config('wapi-paging'),
                }
-        api_principle.configure_plugin(dc_id=dc_id,
-                                       config=cfg)
+        api_principle.configure_plugin(dc_id=dc_id, config=cfg)
+
+
+@reactive.when('infoblox-designate.connected')
+def configure_designate_plugin(api_principle):
+    with charm.provide_charm_instance() as charm_class:
+        log('Setting designate configuration')
+        dc_id = config('cloud-data-center-id')
+        cfg = {}
+        api_principle.configure_plgin(dc_id=dc_id, config=cfg)

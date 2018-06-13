@@ -1,6 +1,6 @@
 includes:
   - 'layer:openstack'
-  - 'interface:infoblox-api'
+  - 'interface:infoblox'
 options:
   basic:
     use_venv: False

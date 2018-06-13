@@ -10,8 +10,8 @@ series:
   - xenial
   - bionic
 provides:
-  infoblox-api:
-    interface: infoblox-api
+  infoblox-neutron:
+    interface: infoblox
     scope: container
 requires:
   container:
