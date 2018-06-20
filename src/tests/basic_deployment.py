@@ -27,7 +27,7 @@ u = os_amulet_utils.OpenStackAmuletUtils(os_amulet_utils.DEBUG)
 
 
 class TestInfobloxCharmDeployment(amulet_deployment.OpenStackAmuletDeployment):
-    """Amulet tests on a basic test-infoblox deployment."""
+    """Amulet tests on a basic infoblox deployment."""
 
     def __init__(self, series, openstack=None, source=None, stable=False):
         """Deploy the entire test environment."""
@@ -47,11 +47,11 @@ class TestInfobloxCharmDeployment(amulet_deployment.OpenStackAmuletDeployment):
     def _add_services(self):
         """Add services
 
-           Add the services that we're testing, where test-infoblox is local,
+           Add the services that we're testing, where infoblox is local,
            and the rest of the service are from lp branches that are
            compatible with the local charm (e.g. stable or next).
            """
-        this_service = {'name': 'test-infoblox'}
+        this_service = {'name': 'infoblox'}
         other_services = [
             {
                 'name': 'nova-compute',
@@ -70,12 +70,12 @@ class TestInfobloxCharmDeployment(amulet_deployment.OpenStackAmuletDeployment):
             {'name': 'glance'},
         ]
         super(TestInfobloxCharmDeployment, self)._add_services(this_service,
-                                                      other_services)
+                                                               other_services)
 
     def _add_relations(self):
         """Add all of the relations for the services."""
         relations = {
-            'nova-compute:neutron-plugin': 'test-infoblox:neutron-plugin',
+            'neutron-api': 'infoblox',
             'keystone:shared-db': 'mysql:shared-db',
             'nova-cloud-controller:shared-db': 'mysql:shared-db',
             'nova-cloud-controller:amqp': 'rabbitmq-server:amqp',
@@ -98,7 +98,6 @@ class TestInfobloxCharmDeployment(amulet_deployment.OpenStackAmuletDeployment):
             'neutron-api:neutron-plugin-api',
             'neutron-gateway:quantum-network-service':
             'nova-cloud-controller:quantum-network-service',
-            'neutron-gateway:juju-info': 'test-infoblox:container',
         }
         super(TestInfobloxCharmDeployment, self)._add_relations(relations)
 
@@ -115,12 +114,12 @@ class TestInfobloxCharmDeployment(amulet_deployment.OpenStackAmuletDeployment):
     def _initialize_tests(self):
         """Perform final initialization before tests get run."""
         # Access the sentries for inspecting service units
-        self.test-infoblox_sentry = self.d.sentry['test-infoblox'][0]
+        self.infoblox_sentry = self.d.sentry['infoblox'][0]
         self.mysql_sentry = self.d.sentry['mysql'][0]
         self.keystone_sentry = self.d.sentry['keystone'][0]
         self.rabbitmq_sentry = self.d.sentry['rabbitmq-server'][0]
-        self.test-infoblox_svcs = [
-            'test-infoblox-agent', 'test-infoblox-api']
+        self.infoblox_svcs = [
+            'infoblox-agent', 'infoblox']
 
         # Authenticate admin with keystone endpoint
         self.keystone = u.authenticate_keystone_admin(self.keystone_sentry,
@@ -171,7 +170,7 @@ class TestInfobloxCharmDeployment(amulet_deployment.OpenStackAmuletDeployment):
         u.log.debug('Checking system services on units...')
 
         service_names = {
-            self.test-infoblox_sentry: self.test-infoblox_svcs,
+            self.infoblox_sentry: self.infoblox_svcs,
         }
 
         ret = u.validate_services_by_name(service_names)

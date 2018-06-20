@@ -2,5 +2,7 @@ build/
 .local/
 .testrepository/
 .tox/
+.stestr/
 func-results.json
 test-charm/
+*.pyc

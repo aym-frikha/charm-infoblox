@@ -4,3 +4,9 @@ includes:
 options:
   basic:
     use_venv: False
+    packages:
+      - 'python3-neutron-lib'
+      - 'build-essential'
+      - 'libssl-dev'
+      - 'libffi-dev'
+      - 'python-dev'

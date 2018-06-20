@@ -1,10 +1,13 @@
-import socket
 import subprocess
 
 from pip import main as pip_execute
 
 import charmhelpers.core.hookenv as hookenv
-import charmhelpers.contrib.network.ip as ch_ip
+from charmhelpers.core.hookenv import (
+    config,
+    log,
+    status_set,
+)
 import charms_openstack.charm
 
 from charmhelpers.contrib.openstack.utils import (
@@ -36,18 +39,34 @@ class InfobloxCharm(charms_openstack.charm.OpenStackCharm):
 
     # List of packages to install for this charm
     packages = ['']
-    # FIXME: This ugly hack. Package networking-infoblox?
+    # FIXME: This is an ugly hack. Package networking-infoblox?
+
     def install(self):
-        deps = ['chardet', 'idna', 'pytz', 'pyparsing', 'pbr', 'funcsigs',
-                'six', 'wrapt', 'debtcollector', 'iso8601', 'Babel',
-                'oslo.i18n', 'netifaces', 'netaddr', 'monotonic', 'oslo.utils',
-                'msgpack', 'oslo.serialization', 'python-dateutil',
-                'pyinotify', 'oslo.context', 'enum34', 'PyYAML', 'stevedore',
-                'rfc3986', 'oslo.config', 'oslo.log', 'setuptools',
-                'infoblox-client']
-        pip_execute(
-            ['install', '--install-option="--install-data=/"',
-             'networking-infoblox{}'.format(get_infoblox_version()),
-             '--no-deps'])
-        for dep in deps:
-            pip_execute(['install', dep, '--no-deps'])
+        log('Starting infoblox installation')
+        pip_execute(['install',
+                     'networking-infoblox{}'.format(get_infoblox_version()),
+                     "--install-option=--install-data=/"])
+        pip_execute(['install', 'neutron'])
+        bad_deps = ['certifi', 'urllib3', 'requsts']
+        for dep in bad_deps:
+            pip_execute(['uninstall', dep, '-y'])
+
+        hookenv.log('Starting infoblox-ipam-agent service')
+        subprocess.check_call(
+            ['update-rc.d', 'infoblox-ipam-agent', 'defaults'])
+        subprocess.check_call(
+            ['service', 'infoblox-ipam-agent', 'restart'])
+        status_set('active', 'Unit is ready')
+
+    def get_infoblox_conf(self):
+        log('Setting neutron-api configuration')
+        cfg = {'grid_master_host': config('grid-master-host'),
+               'grid_master_name': config('grid-master-name'),
+               'admin_user_name': config('admin-user-name'),
+               'admin_password': config('admin-password'),
+               'wapi_version': config('wapi-version'),
+               'wapi_max_results': config('wapi-max-results'),
+               'wapi_paging': config('wapi-paging'),
+               }
+        dc_id = config('cloud-data-center-id')
+        return dc_id, cfg

@@ -36,7 +36,7 @@ options:
       The password to use for the WAPI.
   wapi-version:
     type: string
-    default: ''
+    default: '2.3'
     description: |
       The WAPI version to use. WAPI Version 2.3 or later is supported.
       (NIOS version 7.3.x or later is supported)
