@@ -31,6 +31,12 @@ def install_packages():
         reactive.set_state('infoblox.installed')
 
 
+@reactive.when('infoblox-neutron.configured')
+def create_ea_definitions():
+    with provide_charm_instance as charm_class:
+        charm_class.create_ea_defs()
+
+
 @reactive.when('infoblox-neutron.connected')
 def configure_neutron_plugin(api_principle):
     with provide_charm_instance() as charm_class:

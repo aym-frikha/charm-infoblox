@@ -1,7 +1,7 @@
 options:
   cloud-data-center-id:
     type: string
-    default: '0'
+    default: '1'
     description: |
       An integer ID used for the data center. This is used to form the stanza
       name for the rest of the options. If you have multiple instances of
@@ -56,3 +56,12 @@ options:
       Enables paging to wapi calls by configuring wapi_paging = True, it uses
       wapi_max_results to set paging size of the wapi calls. If wapi_max_results
       is negative it will take paging size as 1000. The default is False.
+  network-views:
+    type: string
+    default: 'default'
+    description: |
+      Comma delineated list of participating network views on the target
+      Infoblox server.
+  openstack-release:
+    type: string
+    default: ''

@@ -17,7 +17,7 @@ from charmhelpers.contrib.openstack.utils import (
 
 
 def get_infoblox_version():
-    if CompareOpenStackReleases(os_release('neutron-server')) <= 'mitaka':
+    """if CompareOpenStackReleases(os_release('neutron-server')) == 'mitaka':
         return '==8.0.1'
     elif CompareOpenStackReleases(os_release('neutron-server')) == 'newton':
         return '==9.0.1'
@@ -25,8 +25,8 @@ def get_infoblox_version():
         return '==10.0.1'
     elif CompareOpenStackReleases(os_release('neutron-server')) == 'pike':
         return '==11.0.1'
-    else:
-        return None
+    else:"""
+    return '==12.0.0'
 
 
 class InfobloxCharm(charms_openstack.charm.OpenStackCharm):
@@ -43,20 +43,26 @@ class InfobloxCharm(charms_openstack.charm.OpenStackCharm):
 
     def install(self):
         log('Starting infoblox installation')
-        pip_execute(['install',
-                     'networking-infoblox{}'.format(get_infoblox_version()),
-                     "--install-option=--install-data=/"])
-        pip_execute(['install', 'neutron'])
-        bad_deps = ['certifi', 'urllib3', 'requsts']
-        for dep in bad_deps:
-            pip_execute(['uninstall', dep, '-y'])
-
+        subprocess.check_call(
+            ['pip', 'install',
+             'networking-infoblox{}'.format(get_infoblox_version()),
+             "--install-option=--install-data=/"])
         hookenv.log('Starting infoblox-ipam-agent service')
         subprocess.check_call(
             ['update-rc.d', 'infoblox-ipam-agent', 'defaults'])
         subprocess.check_call(
             ['service', 'infoblox-ipam-agent', 'restart'])
         status_set('active', 'Unit is ready')
+
+
+    def create_ea_definitions(self):
+        log('Setting up Infoblox EA definitions')
+        username = config('admin-user-name')
+        password = config('admin-password')
+        views = config('network-views')
+        subprocess.check_call(
+            ['create_ea_defs', '--username', username, '--password', password,
+             '--participating_network_views', views])
 
     def get_infoblox_conf(self):
         log('Setting neutron-api configuration')

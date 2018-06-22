@@ -28,6 +28,7 @@ mock_pip = mock.MagicMock()
 sys.modules['pip'] = mock_pip
 mock_pip.pip_execute = mock.MagicMock()
 
+
 def _fake_retry(num_retries, base_delay=0, exc_type=Exception):
     def _retry_on_exception_inner_1(f):
         def _retry_on_exception_inner_2(*args, **kwargs):
