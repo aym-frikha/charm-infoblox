@@ -44,7 +44,7 @@ class InfobloxCharm(charms_openstack.charm.OpenStackCharm):
     def install(self):
         log('Starting infoblox installation')
         subprocess.check_call(
-            ['pip install -r requirements.txt],
+            ['pip install -r infoblox-requirements.txt --no-deps'],
             shell=True)
         status_set('wating', 'Incomplete relation: neutron-api')
 
