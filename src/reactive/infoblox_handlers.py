@@ -23,15 +23,17 @@ import charm.openstack.infoblox as infoblox  # noqa
 
 use_defaults('update-status')
 
-
+@reactive.when('neutron.configured'):
 @reactive.when_not('infoblox.installed')
-def install_packages():
+def install_infoblox(api_principle):
     with provide_charm_instance() as charm_class:
         charm_class.install()
-        reactive.set_state('infoblox.installed')
+        api_principle.migrate_principal()
+    reactive.set_state('infoblox.installed')
 
 
-@reactive.when('infoblox-neutron.configured')
+@reactive.when('infoblox.create-defs',
+               'infoblox.installed')
 def create_ea_definitions():
     with provide_charm_instance as charm_class:
         charm_class.create_ea_defs()

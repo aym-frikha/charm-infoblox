@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 import subprocess
 
 from pip import main as pip_execute
@@ -39,21 +40,15 @@ class InfobloxCharm(charms_openstack.charm.OpenStackCharm):
 
     # List of packages to install for this charm
     packages = ['']
-    # FIXME: This is an ugly hack. Package networking-infoblox?
 
     def install(self):
         log('Starting infoblox installation')
         subprocess.check_call(
-            ['pip', 'install',
-             'networking-infoblox{}'.format(get_infoblox_version()),
-             "--install-option=--install-data=/"])
-        hookenv.log('Starting infoblox-ipam-agent service')
-        subprocess.check_call(
-            ['update-rc.d', 'infoblox-ipam-agent', 'defaults'])
-        subprocess.check_call(
-            ['service', 'infoblox-ipam-agent', 'restart'])
-        status_set('active', 'Unit is ready')
-
+            ['pip install networking-infoblox=={} '
+             '--install-option="--install-data=/"'.format(
+                get_infoblox_version())],
+            shell=True)
+        status_set('wating', 'Incomplete relation: neutron-api')
 
     def create_ea_definitions(self):
         log('Setting up Infoblox EA definitions')
@@ -61,8 +56,8 @@ class InfobloxCharm(charms_openstack.charm.OpenStackCharm):
         password = config('admin-password')
         views = config('network-views')
         subprocess.check_call(
-            ['create_ea_defs', '--username', username, '--password', password,
-             '--participating_network_views', views])
+            ['create_ea_defs', '-u', username, '-p', password, '-pnv', views])
+        status_set('active', 'Unit is ready')
 
     def get_infoblox_conf(self):
         log('Setting neutron-api configuration')

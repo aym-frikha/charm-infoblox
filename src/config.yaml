@@ -60,8 +60,5 @@ options:
     type: string
     default: 'default'
     description: |
-      Comma delineated list of participating network views on the target
+      Comma separated list of participating network views on the target
       Infoblox server.
-  openstack-release:
-    type: string
-    default: ''
