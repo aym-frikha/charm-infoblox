@@ -27,7 +27,7 @@ def get_infoblox_version():
     elif CompareOpenStackReleases(os_release('neutron-server')) == 'pike':
         return '==11.0.1'
     else:"""
-    return '==12.0.0'
+    return '12.0.0'
 
 
 class InfobloxCharm(charms_openstack.charm.OpenStackCharm):
@@ -44,9 +44,7 @@ class InfobloxCharm(charms_openstack.charm.OpenStackCharm):
     def install(self):
         log('Starting infoblox installation')
         subprocess.check_call(
-            ['pip install networking-infoblox=={} '
-             '--install-option="--install-data=/"'.format(
-                get_infoblox_version())],
+            ['pip install -r requirements.txt],
             shell=True)
         status_set('wating', 'Incomplete relation: neutron-api')
 
