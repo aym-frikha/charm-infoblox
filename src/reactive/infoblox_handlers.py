@@ -40,8 +40,7 @@ def create_ea_definitions():
         charm_class.create_ea_definitions()
 
 
-@reactive.when_any('neutron.connected'
-                   'designate.connected')
+@reactive.when_any('neutron.connected', 'designate.connected')
 def configure_neutron_plugin(principle):
     with provide_charm_instance() as charm_class:
         dc_id, cfg = charm_class.get_infoblox_conf()
