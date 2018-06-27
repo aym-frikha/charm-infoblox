@@ -44,8 +44,8 @@ class InfobloxCharm(charms_openstack.charm.OpenStackCharm):
     def install(self):
         log('Starting infoblox installation')
         subprocess.check_call(
-            ['pip install -r infoblox-requirements.txt --no-deps'],
-            shell=True)
+            ['pip', 'install', '--no-index', '--find-links=infoblox-wheel',
+             'networking-infoblox'])
         status_set('wating', 'Incomplete relation: neutron-api')
 
     def create_ea_definitions(self):
@@ -66,6 +66,7 @@ class InfobloxCharm(charms_openstack.charm.OpenStackCharm):
                'wapi_version': config('wapi-version'),
                'wapi_max_results': config('wapi-max-results'),
                'wapi_paging': config('wapi-paging'),
+               'network_views': config('network-views')
                }
         dc_id = config('cloud-data-center-id')
         return dc_id, cfg
