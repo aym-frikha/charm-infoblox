@@ -10,10 +10,10 @@ series:
   - xenial
   - bionic
 provides:
-  infoblox-neutron:
+  neutron:
     interface: infoblox
     scope: container
-  infoblox-designate:
+  designate:
     interface: infoblox
     scope: container
 requires:
