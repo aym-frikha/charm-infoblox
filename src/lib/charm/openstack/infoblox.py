@@ -44,7 +44,7 @@ class InfobloxCharm(charms_openstack.charm.OpenStackCharm):
     def install(self):
         log('Starting infoblox installation')
         subprocess.check_call(
-            ['pip', 'install', '--no-index', '--find-links=infoblox-wheel',
+            ['pip', 'install', '--no-index', '--find-links infoblox-wheel',
              'networking-infoblox'])
         status_set('wating', 'Incomplete relation: neutron-api')
 
