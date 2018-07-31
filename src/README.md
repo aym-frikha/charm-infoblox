@@ -15,4 +15,4 @@ With the OpenStack neutron-api charm:
 
 # Restrictions
 
-Compatible with OpenStack Mitaka and higher, requires a configured Infoblox server.
+Compatible with OpenStack Queens and higher, requires a configured Infoblox server.

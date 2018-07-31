@@ -1,2 +1,0 @@
-infoblox-client==0.4.19
-networking-infoblox==12.0.0

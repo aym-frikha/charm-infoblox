@@ -30,14 +30,6 @@ def install_infoblox():
     reactive.set_state('infoblox.installed')
 
 
-@reactive.when('neutron.configured')
-@reactive.when('infoblox.installed')
-def migrate_neutron(principle):
-    with provide_charm_instance() as charm_class:
-        principle.migrate_principal()
-
-
-
 @reactive.when('infoblox.create-defs')
 @reactive.when('infoblox.installed')
 def create_ea_definitions():
@@ -48,7 +40,7 @@ def create_ea_definitions():
 @reactive.when('neutron.connected')
 @reactive.when('infoblox.installed')
 def configure_neutron(principle):
-    configure_infoblox_principal(principle)
+    configure_infoblox_principal(principle, migrate=True)
 
 
 @reactive.when('designate.connected')
@@ -57,7 +49,9 @@ def configure_designate(principle):
     configure_infoblox_principal(principle)
 
 
-def configure_infoblox_principal(principle):
+def configure_infoblox_principal(principle, migrate=False):
     with provide_charm_instance() as charm_class:
         dc_id, cfg = charm_class.get_infoblox_conf()
         principle.configure_principal(dc_id=dc_id, config=cfg)
+        if migrate:
+            principle.migrate_principal()

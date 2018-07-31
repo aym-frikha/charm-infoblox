@@ -1,7 +1,5 @@
-#!/usr/bin/python3
+#!/usr/bin/python2
 import subprocess
-
-from pip import main as pip_execute
 
 import charmhelpers.core.hookenv as hookenv
 from charmhelpers.core.hookenv import (
@@ -17,26 +15,13 @@ from charmhelpers.contrib.openstack.utils import (
 )
 
 
-def get_infoblox_version():
-    """if CompareOpenStackReleases(os_release('neutron-server')) == 'mitaka':
-        return '==8.0.1'
-    elif CompareOpenStackReleases(os_release('neutron-server')) == 'newton':
-        return '==9.0.1'
-    elif CompareOpenStackReleases(os_release('neutron-server')) == 'ocata':
-        return '==10.0.1'
-    elif CompareOpenStackReleases(os_release('neutron-server')) == 'pike':
-        return '==11.0.1'
-    else:"""
-    return '12.0.0'
-
-
 class InfobloxCharm(charms_openstack.charm.OpenStackCharm):
 
     # Internal name of charm
     service_name = name = 'infoblox'
 
     # First release supported
-    release = 'mitaka'
+    release = 'queens'
 
     # List of packages to install for this charm
     packages = ['']
@@ -44,9 +29,20 @@ class InfobloxCharm(charms_openstack.charm.OpenStackCharm):
     def install(self):
         log('Starting infoblox installation')
         subprocess.check_call(
-            ['pip', 'install', '--no-index', '--find-links infoblox-wheel',
-             'networking-infoblox'])
-        status_set('wating', 'Incomplete relation: neutron-api')
+            ['wget', 'https://github.com/mskalka/networking-infoblox-deb/raw\
+             /master/networking-infoblox_12.0.0_amd64.deb'])
+        subprocess.check_call(
+            ['dpkg', '-i', 'networking-infoblox_12.0.0_amd64.deb'])
+        status_set('waiting', 'Incomplete relation: neutron-api')
+
+    def restart_infoblox_service(self):
+        log('Restarting infoblox service')
+        subprocess.check_call(['service', 'infoblox', 'restart'])
+        status_set('active', 'Unit is ready')
+
+    def upgrade_neutron_db(self):
+        log('Upgrading neutron db')
+        subprocess.check_call(['neutron-db-manage', 'upgrade', 'head'])
 
     def create_ea_definitions(self):
         log('Setting up Infoblox EA definitions')
@@ -55,7 +51,6 @@ class InfobloxCharm(charms_openstack.charm.OpenStackCharm):
         views = config('network-views')
         subprocess.check_call(
             ['create_ea_defs', '-u', username, '-p', password, '-pnv', views])
-        status_set('active', 'Unit is ready')
 
     def get_infoblox_conf(self):
         log('Setting neutron-api configuration')
