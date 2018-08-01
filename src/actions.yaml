@@ -1,0 +1,3 @@
+force-service-restart:
+  description: |
+    Force neutron-server db migration and service restart. Use with caution.
