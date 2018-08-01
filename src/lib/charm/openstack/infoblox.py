@@ -8,9 +8,6 @@ from charmhelpers.core.hookenv import (
     log,
     status_set,
 )
-from charmhelpers.core.host import (
-    service_reload,
-)
 from charmhelpers.contrib.openstack.utils import (
     CompareOpenStackReleases,
     os_release,
@@ -35,7 +32,7 @@ class InfobloxCharm(charms_openstack.charm.OpenStackCharm):
              '/master/networking-infoblox_12.0.0_amd64.deb'])
         subprocess.check_call(
             ['dpkg', '-i', 'networking-infoblox_12.0.0_amd64.deb'])
-        service_reload('infoblox-ipam-agent')
+        subprocess.check_call(['service', 'infoblox-ipam-agent', 'restart'])
         status_set('waiting', 'Incomplete relation: neutron-api')
 
     def create_ea_definitions(self):
