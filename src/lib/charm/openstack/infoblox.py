@@ -29,20 +29,11 @@ class InfobloxCharm(charms_openstack.charm.OpenStackCharm):
     def install(self):
         log('Starting infoblox installation')
         subprocess.check_call(
-            ['wget', 'https://github.com/mskalka/networking-infoblox-deb/raw\
-             /master/networking-infoblox_12.0.0_amd64.deb'])
+            ['wget', 'https://github.com/mskalka/networking-infoblox-deb/raw/'
+             '/master/networking-infoblox_12.0.0_amd64.deb'])
         subprocess.check_call(
             ['dpkg', '-i', 'networking-infoblox_12.0.0_amd64.deb'])
-        status_set('waiting', 'Incomplete relation: neutron-api')
-
-    def restart_infoblox_service(self):
-        log('Restarting infoblox service')
-        subprocess.check_call(['service', 'infoblox', 'restart'])
-        status_set('active', 'Unit is ready')
-
-    def upgrade_neutron_db(self):
-        log('Upgrading neutron db')
-        subprocess.check_call(['neutron-db-manage', 'upgrade', 'head'])
+        status_set('waiting', 'Incomplete relation: neutron-api
 
     def create_ea_definitions(self):
         log('Setting up Infoblox EA definitions')
@@ -54,14 +45,14 @@ class InfobloxCharm(charms_openstack.charm.OpenStackCharm):
 
     def get_infoblox_conf(self):
         log('Setting neutron-api configuration')
-        cfg = {'grid_master_host': config('grid-master-host'),
+        cfg = {'dc_id': config('cloud-data-center-id'),
+               'grid_master_host': config('grid-master-host'),
                'grid_master_name': config('grid-master-name'),
                'admin_user_name': config('admin-user-name'),
                'admin_password': config('admin-password'),
                'wapi_version': config('wapi-version'),
                'wapi_max_results': config('wapi-max-results'),
                'wapi_paging': config('wapi-paging'),
-               'network_views': config('network-views')
+               'network_views': config('network-views'),
                }
-        dc_id = config('cloud-data-center-id')
-        return dc_id, cfg
+        return cfg

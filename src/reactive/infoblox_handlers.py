@@ -49,9 +49,7 @@ def configure_designate(principle):
     configure_infoblox_principal(principle)
 
 
-def configure_infoblox_principal(principle, migrate=False):
+def configure_infoblox_principal(principle):
     with provide_charm_instance() as charm_class:
-        dc_id, cfg = charm_class.get_infoblox_conf()
-        principle.configure_principal(dc_id=dc_id, config=cfg)
-        if migrate:
-            principle.migrate_principal()
+        config = charm_class.get_infoblox_conf()
+        principle.configure_principal(config)
