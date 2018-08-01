@@ -36,7 +36,7 @@ class InfobloxCharm(charms_openstack.charm.OpenStackCharm):
         subprocess.check_call(
             ['dpkg', '-i', 'networking-infoblox_12.0.0_amd64.deb'])
         service_reload('infoblox-ipam-agent')
-        status_set('waiting', 'Incomplete relation: neutron-api
+        status_set('waiting', 'Incomplete relation: neutron-api')
 
     def create_ea_definitions(self):
         log('Setting up Infoblox EA definitions')

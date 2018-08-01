@@ -40,7 +40,7 @@ def create_ea_definitions():
 @reactive.when('neutron.connected')
 @reactive.when('infoblox.installed')
 def configure_neutron(principle):
-    configure_infoblox_principal(principle, migrate=True)
+    configure_infoblox_principal(principle)
 
 
 @reactive.when('designate.connected')
