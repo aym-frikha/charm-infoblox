@@ -32,9 +32,11 @@ def install_infoblox():
 
 @reactive.when('infoblox.create-defs')
 @reactive.when('infoblox.installed')
+@reactive.when_not('infoblox.ready')
 def create_ea_definitions():
     with provide_charm_instance() as charm_class:
         charm_class.create_ea_definitions()
+    reactive.set_state('infoblox.ready')
 
 
 @reactive.when('neutron.connected')

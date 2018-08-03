@@ -40,6 +40,7 @@ class InfobloxCharm(charms_openstack.charm.OpenStackCharm):
         username = config('admin-user-name')
         password = config('admin-password')
         views = config('network-views')
+        subprocess.check_call(['service', 'infoblox-ipam-agent', 'restart'])
         subprocess.check_call(
             ['create_ea_defs', '-u', username, '-p', password, '-pnv', views])
 
