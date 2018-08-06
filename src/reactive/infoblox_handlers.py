@@ -30,6 +30,12 @@ def install_infoblox():
     reactive.set_state('infoblox.installed')
 
 
+@reactive.hook('config-changed')
+def config_changed():
+    reactive.remove_state('neutron.configured')
+    reactive.remove_state('designate.configured')
+
+
 @reactive.when('infoblox.create-defs')
 @reactive.when('infoblox.installed')
 @reactive.when_not('infoblox.ready')
@@ -41,8 +47,10 @@ def create_ea_definitions():
 
 @reactive.when('neutron.connected')
 @reactive.when('infoblox.installed')
+@reactive.when_not('neutron.configured')
 def configure_neutron(principle):
     configure_infoblox_principal(principle)
+    reactive.set_state('neutron.configured')
 
 
 @reactive.when('designate.connected')
