@@ -49,17 +49,18 @@ def create_ea_definitions():
 @reactive.when('infoblox.installed')
 @reactive.when_not('neutron.configured')
 def configure_neutron(principle):
-    configure_infoblox_principal(principle)
+    with provide_charm_instance() as charm_class:
+        config = charm_class.get_neutron_conf()
+        principle.configure_principal(config)
     reactive.set_state('neutron.configured')
 
 
 @reactive.when('designate.connected')
 @reactive.when('infoblox.installed')
+@reactive.when_not('designate.configured')
 def configure_designate(principle):
-    configure_infoblox_principal(principle)
-
-
-def configure_infoblox_principal(principle):
     with provide_charm_instance() as charm_class:
-        config = charm_class.get_infoblox_conf()
-        principle.configure_principal(config)
+        config = charm_class.get_designate_conf()
+        if config:
+            principle.configure_principal(config)
+            reactive.set_state('designate.configured')

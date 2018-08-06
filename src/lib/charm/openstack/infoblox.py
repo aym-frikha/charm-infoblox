@@ -1,5 +1,6 @@
 #!/usr/bin/python2
 import subprocess
+import uuid
 
 import charms_openstack.charm
 import charmhelpers.core.hookenv as hookenv
@@ -7,6 +8,9 @@ from charmhelpers.core.hookenv import (
     config,
     log,
     status_set,
+    is_leader,
+    leader_set,
+    leader_get,
 )
 from charmhelpers.contrib.openstack.utils import (
     CompareOpenStackReleases,
@@ -44,16 +48,37 @@ class InfobloxCharm(charms_openstack.charm.OpenStackCharm):
         subprocess.check_call(
             ['create_ea_defs', '-u', username, '-p', password, '-pnv', views])
 
-    def get_infoblox_conf(self):
-        log('Setting neutron-api configuration')
-        cfg = {'dc_id': config('cloud-data-center-id'),
-               'grid_master_host': config('grid-master-host'),
-               'grid_master_name': config('grid-master-name'),
-               'admin_user_name': config('admin-user-name'),
-               'admin_password': config('admin-password'),
-               'wapi_version': config('wapi-version'),
-               'wapi_max_results': config('wapi-max-results'),
-               'wapi_paging': config('wapi-paging'),
-               'network_views': config('network-views'),
-               }
-        return cfg
+    def get_neutron_conf(self):
+        return {'dc_id': config('cloud-data-center-id'),
+                'grid_master_host': config('grid-master-host'),
+                'grid_master_name': config('grid-master-name'),
+                'admin_user_name': config('admin-user-name'),
+                'admin_password': config('admin-password'),
+                'wapi_version': config('wapi-version'),
+                'wapi_max_results': config('wapi-max-results'),
+                'wapi_paging': config('wapi-paging'),
+                'network_views': config('network-views'),
+                }
+
+    def get_designate_conf(self):
+        uuids = leader_get('uuids')
+        if not uuids:
+            if is_leader():
+                uuids = {
+                    'pool': str(uuid.uuid4()),
+                    'pool_target': str(uuid.uuid4()),
+                    'nameserver': str(uuid.uuid4()),
+                }
+                leader_set('uuids': uuids)
+            else:
+                log('Designate UUIDS not set, skipping')
+                return None
+        return {
+            'pool': uuids['pool'],
+            'pool_target': uuids['pool_target']
+            'nameserver': uuids['nameserver']
+            'host': config('grid-master-host')
+            'wapi_version': config('wapi-version')
+            'admin_username': config('admin-user-name')
+            'admin_password': config('admin-user-password')
+            }
