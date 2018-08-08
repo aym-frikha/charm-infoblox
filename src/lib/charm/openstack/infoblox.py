@@ -29,14 +29,22 @@ class InfobloxCharm(charms_openstack.charm.OpenStackCharm):
     # List of packages to install for this charm
     packages = ['']
 
-    def install(self):
+    def install(self, neutron=False):
         log('Starting infoblox installation')
-        subprocess.check_call(
-            ['wget', 'https://github.com/mskalka/networking-infoblox-deb/raw/'
-             '/master/networking-infoblox_12.0.0_amd64.deb'])
-        subprocess.check_call(
-            ['dpkg', '-i', 'networking-infoblox_12.0.0_amd64.deb'])
-        subprocess.check_call(['service', 'infoblox-ipam-agent', 'restart'])
+        if neutron:
+            subprocess.check_call(
+                ['wget', 'https://github.com/mskalka/networking-infoblox-'
+                'deb/raw/master/networking-infoblox_12.0.0_amd64.deb'])
+            subprocess.check_call(
+                ['dpkg', '-i', 'networking-infoblox_12.0.0_amd64.deb'])
+            subprocess.check_call(
+                ['service', 'infoblox-ipam-agent', 'restart'])
+
+        if not leader_get('pool'):
+            if is_leader():
+                leader_set({'pool': str(uuid.uuid4()),
+                            'pool_target': str(uuid.uuid4()),
+                            'nameserver': str(uuid.uuid4())})
         status_set('active', 'Unit is ready')
 
     def create_ea_definitions(self):
@@ -61,24 +69,19 @@ class InfobloxCharm(charms_openstack.charm.OpenStackCharm):
                 }
 
     def get_designate_conf(self):
-        uuids = leader_get('uuids')
-        if not uuids:
-            if is_leader():
-                uuids = {
-                    'pool': str(uuid.uuid4()),
-                    'pool_target': str(uuid.uuid4()),
-                    'nameserver': str(uuid.uuid4()),
-                }
-                leader_set('uuids': uuids)
-            else:
-                log('Designate UUIDS not set, skipping')
-                return None
+        if leader_get('pool'):
+            pool_uuid = leader_get('pool')
+            pool_target_uuid = leader_get('pool_target')
+            nameserver_uuid = leader_get('nameserver')
+        else:
+            log('Designate UUIDS not yet set by leader, skipping for now.')
+            return None
         return {
-            'pool': uuids['pool'],
-            'pool_target': uuids['pool_target']
-            'nameserver': uuids['nameserver']
-            'host': config('grid-master-host')
-            'wapi_version': config('wapi-version')
-            'admin_username': config('admin-user-name')
-            'admin_password': config('admin-user-password')
+            'pool': pool_uuid,
+            'pool_target': pool_target_uuid,
+            'nameserver': nameserver_uuid,
+            'host': config('grid-master-host'),
+            'wapi_version': config('wapi-version'),
+            'admin_username': config('admin-user-name'),
+            'admin_password': config('admin-user-password'),
             }

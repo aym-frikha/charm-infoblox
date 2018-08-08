@@ -23,10 +23,12 @@ import charm.openstack.infoblox as infoblox  # noqa
 
 use_defaults('update-status')
 
+
 @reactive.when_not('infoblox.installed')
 def install_infoblox():
     with provide_charm_instance() as charm_class:
-        charm_class.install()
+        charm_class.install(
+            neutron=reactive.flags.is_flag_set('neutron.connected'))
     reactive.set_state('infoblox.installed')
 
 
