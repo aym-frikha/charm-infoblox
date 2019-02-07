@@ -27,8 +27,7 @@ use_defaults('update-status')
 @reactive.when_not('infoblox.installed')
 def install_infoblox():
     with provide_charm_instance() as charm_class:
-        charm_class.install(
-            neutron=reactive.flags.is_flag_set('neutron.connected'))
+        charm_class.install()
     reactive.set_state('infoblox.installed')
 
 
