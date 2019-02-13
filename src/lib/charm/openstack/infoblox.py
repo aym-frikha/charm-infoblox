@@ -12,6 +12,13 @@ from charmhelpers.core.hookenv import (
     leader_set,
     leader_get,
 )
+from charmhelpers.fetch import (
+    apt_install,
+    apt_update,
+    filter_installed_packages,
+    add_source,
+)
+
 from charmhelpers.contrib.openstack.utils import (
     CompareOpenStackReleases,
     os_release,
@@ -34,10 +41,11 @@ class InfobloxCharm(charms_openstack.charm.OpenStackCharm):
 
     def install(self):
         log('Starting infoblox installation')
-        self.configure_source()
-        # and do the actual install
-        super(InfobloxCharm, self).install()
-
+        installed = len(filter_installed_packages(self.packages)) == 0
+        if not installed:
+            add_source('ppa:canonical-infoblox/stable')
+            apt_update(fatal=True)
+            apt_install(self.packages[0], fatal=True)
         if not leader_get('pool'):
             if is_leader():
                 leader_set({'pool': str(uuid.uuid4()),
