@@ -12,6 +12,13 @@ from charmhelpers.core.hookenv import (
     leader_set,
     leader_get,
 )
+from charmhelpers.fetch import (
+    apt_install,
+    apt_update,
+    filter_installed_packages,
+    add_source,
+)
+
 from charmhelpers.contrib.openstack.utils import (
     CompareOpenStackReleases,
     os_release,
@@ -27,19 +34,18 @@ class InfobloxCharm(charms_openstack.charm.OpenStackCharm):
     release = 'queens'
 
     # List of packages to install for this charm
-    packages = ['']
+    packages = ['python-networking-infoblox']
 
-    def install(self, neutron=False):
+    default_service = 'infoblox-ipam-agent'
+
+
+    def install(self):
         log('Starting infoblox installation')
-        if neutron:
-            subprocess.check_call(
-                ['wget', 'https://github.com/mskalka/networking-infoblox-'
-                'deb/raw/master/networking-infoblox_12.0.0_amd64.deb'])
-            subprocess.check_call(
-                ['dpkg', '-i', 'networking-infoblox_12.0.0_amd64.deb'])
-            subprocess.check_call(
-                ['service', 'infoblox-ipam-agent', 'restart'])
-
+        installed = len(filter_installed_packages(self.packages)) == 0
+        if not installed:
+            add_source(config('source'))
+            apt_update(fatal=True)
+            apt_install(self.packages[0], fatal=True)
         if not leader_get('pool'):
             if is_leader():
                 leader_set({'pool': str(uuid.uuid4()),
@@ -52,7 +58,7 @@ class InfobloxCharm(charms_openstack.charm.OpenStackCharm):
         username = config('admin-user-name')
         password = config('admin-password')
         views = config('network-views')
-        subprocess.check_call(['service', 'infoblox-ipam-agent', 'restart'])
+        subprocess.check_call(['systemctl', 'restart','infoblox-ipam-agent'])
         subprocess.check_call(
             ['create_ea_defs', '-u', username, '-p', password, '-pnv', views])
 

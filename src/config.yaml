@@ -1,4 +1,9 @@
 options:
+  source:
+    default: ppa:canonical-infoblox/stable
+    type: string
+    description: |
+      Repository from which to install. Ex: ppa:canonical-infoblox/stable
   cloud-data-center-id:
     type: string
     default: '1'
