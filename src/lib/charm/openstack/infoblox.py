@@ -43,7 +43,7 @@ class InfobloxCharm(charms_openstack.charm.OpenStackCharm):
         log('Starting infoblox installation')
         installed = len(filter_installed_packages(self.packages)) == 0
         if not installed:
-            add_source('ppa:canonical-infoblox/stable')
+            add_source(config('source'))
             apt_update(fatal=True)
             apt_install(self.packages[0], fatal=True)
         if not leader_get('pool'):
