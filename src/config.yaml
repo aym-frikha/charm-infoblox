@@ -1,6 +1,6 @@
 options:
   source:
-    default: ppa:canonical-infoblox/stable
+    default: ppa:canonical-infoblox/queens-stable
     type: string
     description: |
       Repository from which to install. Ex: ppa:canonical-infoblox/stable
