@@ -19,11 +19,6 @@ from charmhelpers.fetch import (
     add_source,
 )
 
-from charmhelpers.contrib.openstack.utils import (
-    CompareOpenStackReleases,
-    os_release,
-)
-
 
 class InfobloxCharm(charms_openstack.charm.OpenStackCharm):
 

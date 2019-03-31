@@ -5,8 +5,8 @@ options:
     description: |
       Repository from which to install. Ex: ppa:canonical-infoblox/stable
   cloud-data-center-id:
-    type: string
-    default: '1'
+    type: int
+    default: 1
     description: |
       An integer ID used for the data center. This is used to form the stanza
       name for the rest of the options. If you have multiple instances of

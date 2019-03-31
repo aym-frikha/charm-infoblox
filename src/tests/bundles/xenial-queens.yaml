@@ -70,7 +70,7 @@ services:
       grid-master-name: infoblox.localdomain
       admin-user-name: admin
       admin-password: infoblox
-      network-views: Tenant
+      network-views: default
   neutron-openvswitch:
     charm: cs:~openstack-charmers-next/neutron-openvswitch
     num_units: 0

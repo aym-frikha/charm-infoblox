@@ -1,4 +1,4 @@
-# Copyright 2016 Canonical Ltd
+# Copyright 2019 Canonical Ltd
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,7 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import charms.reactive as reactive
+from charms.reactive import endpoint_from_flag
+from charms.reactive import when, when_not, when_all
+from charms.reactive import clear_flag, set_flag
 
 from charms_openstack.charm import (
     provide_charm_instance,
@@ -24,44 +26,41 @@ import charm.openstack.infoblox as infoblox  # noqa
 use_defaults('update-status')
 
 
-@reactive.when_not('infoblox.installed')
+@when_not('infoblox.installed')
+@when('endpoint.neutron.connected')
 def install_infoblox():
     with provide_charm_instance() as charm_class:
         charm_class.install()
-    reactive.set_state('infoblox.installed')
+    set_flag('infoblox.installed')
 
 
-@reactive.hook('config-changed')
-def config_changed():
-    reactive.remove_state('neutron.configured')
-    reactive.remove_state('designate.configured')
-
-
-@reactive.when('infoblox.create-defs')
-@reactive.when('infoblox.installed')
-@reactive.when_not('infoblox.ready')
+@when_all('endpoint.neutron.neutron_server_ready',
+          'infoblox.installed')
+@when_not('infoblox.ready')
 def create_ea_definitions():
-    with provide_charm_instance() as charm_class:
-        charm_class.create_ea_definitions()
-    reactive.set_state('infoblox.ready')
+     with provide_charm_instance() as charm_class:
+         charm_class.create_ea_definitions()
+     set_flag('infoblox.ready')
 
 
-@reactive.when('neutron.connected')
-@reactive.when('infoblox.installed')
-@reactive.when_not('neutron.configured')
+@when_all('infoblox.installed',
+          'endpoint.neutron.connected')
+@when_not('endpoint.neutron.configured')
 def configure_neutron(principle):
     with provide_charm_instance() as charm_class:
         config = charm_class.get_neutron_conf()
-        principle.configure_principal(config)
-    reactive.set_state('neutron.configured')
+        principal_neutron = \
+            endpoint_from_flag('endpoint.neutron.connected')
+        principal_neutron.configure_principal(config)
+    set_flag('endpoint.neutron.configured')
 
 
-@reactive.when('designate.connected')
-@reactive.when('infoblox.installed')
-@reactive.when_not('designate.configured')
+@when('designate.connected')
+@when('infoblox.installed')
+@when_not('designate.configured')
 def configure_designate(principle):
     with provide_charm_instance() as charm_class:
         config = charm_class.get_designate_conf()
         if config:
             principle.configure_principal(config)
-            reactive.set_state('designate.configured')
+            set_flag('designate.configured')
