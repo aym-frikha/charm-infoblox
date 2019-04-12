@@ -1,10 +1,10 @@
 charm_name: infoblox
 tests:
-  - tests.tests_infoblox.InfobloxTest
+  - tests.test_infoblox.CirrosGuestCreateTest
 configure:
   - zaza.charm_tests.glance.setup.add_cirros_image
-  - zaza.charm_tests.neutron.setup.basic_overcloud_network
   - zaza.charm_tests.nova.setup.create_flavors
+  - tests.test_infoblox.setup_network
 gate_bundles:
   - xenial-queens
 smoke_bundles:

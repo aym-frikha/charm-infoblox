@@ -1,40 +1,79 @@
-#!/usr/bin/env python3
-
-# Copyright 2019 Canonical Ltd.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
-"""Encapsulate infoblox testing."""
-
 import logging
-import uuid
+import unittest
+from zaza.utilities import (
+    cli as cli_utils,
+    generic as generic_utils,
+    juju as juju_utils,
+    openstack as openstack_utils,
+)
 
-import zaza.model
-import zaza.charm_tests.test_utils as test_utils
-import zaza.utilities.openstack as openstack_utils
-import zaza.charm_tests.nova.utils as nova_utils
+net_name = 'private'
+private_subnet = "192.168.1.0/24"
+vm_name = "test_infoblox"
 
+def setup_network():
 
-class InfobloxTest(test_utils.OpenStackBaseTest):
-    """Encapsulate Infoblox tests."""
+    cli_utils.setup_logging()
+    keystone_session = openstack_utils.get_overcloud_keystone_session()
+    # Retrieve necessary clients
+    keystone_client = openstack_utils.get_keystone_session_client(
+        keystone_session)
+    nova_client = openstack_utils.get_nova_session_client(keystone_session)
+    neutron_client = openstack_utils.get_neutron_session_client(
+        keystone_session)
+    # Retrieve necessary variables
+    admin_domain = None
+    if openstack_utils.get_keystone_api_version() > 2:
+        admin_domain = "admin_domain"
 
-    @classmethod
-    def setUpClass(cls):
-        """Run class setup for running tests."""
-        super(InfobloxTest, cls).setUpClass()
-        cls.keystone_session = openstack_utils.get_overcloud_keystone_session()
-        cls.model_name = zaza.model.get_juju_model()
-        cls.neutron_client = openstack_utils.get_cinder_session_client(
-            cls.keystone_session)
-        cls.nova_client = openstack_utils.get_nova_session_client(
-            cls.keystone_session)
+    project_id = openstack_utils.get_project_id(
+        keystone_client,
+        "admin",
+        domain_name=admin_domain,
+    )
+    # Create simple private network
+
+    project_network = openstack_utils.create_project_network(
+        neutron_client,
+        project_id,
+        shared=False,
+        network_type="gre")
+
+    project_subnet = openstack_utils.create_project_subnet(
+        neutron_client,
+        project_id,
+        project_network,
+        private_subnet,
+        ip_version=4)
+
+class CirrosGuestCreateTest(unittest.TestCase):
+    """Tests to launch a cirros image."""
+
+    def test_vm_creation(self):
+        cli_utils.setup_logging()
+        keystone_session = openstack_utils.get_overcloud_keystone_session()
+        # Retrieve necessary clients
+        nova_client = openstack_utils.get_nova_session_client(keystone_session)
+        neutron_client = openstack_utils.get_neutron_session_client(
+            keystone_session)
+
+        image = nova_client.glance.find_image("cirros")
+        flavor = nova_client.flavors.find(name="m1.small")
+        networks = neutron_client.list_networks(name=net_name)
+        if len(networks['networks']) == 0:
+            raise Exception('Network {} has not been created'.format(net_name))
+        nics = [{'net-id': networks['networks'][0]['id']}]
+        # Launch instance.
+        logging.info('Launching instance {}'.format(vm_name))
+        instance = nova_client.servers.create(
+            name=vm_name,
+            image=image,
+            flavor=flavor,
+            nics=nics)
+
+        # Test Instance is ready.
+        logging.info('Checking instance is active')
+        openstack_utils.resource_reaches_status(
+            nova_client.servers,
+            instance.id,
+            expected_status='ACTIVE')
