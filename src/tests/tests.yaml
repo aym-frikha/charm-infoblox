@@ -1,6 +1,6 @@
 charm_name: infoblox
 tests:
-  - tests.test_infoblox.CirrosGuestCreateTest
+  - tests.test_infoblox.InfobloxFunctionalities
 configure:
   - zaza.charm_tests.glance.setup.add_cirros_image
   - zaza.charm_tests.nova.setup.create_flavors

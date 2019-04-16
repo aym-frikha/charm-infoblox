@@ -7,7 +7,6 @@ import charmhelpers.core.hookenv as hookenv
 from charmhelpers.core.hookenv import (
     config,
     log,
-    status_set,
     is_leader,
     leader_set,
     leader_get,
@@ -46,7 +45,6 @@ class InfobloxCharm(charms_openstack.charm.OpenStackCharm):
                 leader_set({'pool': str(uuid.uuid4()),
                             'pool_target': str(uuid.uuid4()),
                             'nameserver': str(uuid.uuid4())})
-        status_set('active', 'Unit is ready')
 
     def create_ea_definitions(self):
         log('Setting up Infoblox EA definitions')

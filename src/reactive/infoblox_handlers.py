@@ -15,7 +15,7 @@
 from charms.reactive import endpoint_from_flag
 from charms.reactive import when, when_not, when_all
 from charms.reactive import clear_flag, set_flag
-
+from charmhelpers.core.hookenv import status_set
 from charms_openstack.charm import (
     provide_charm_instance,
     use_defaults,
@@ -40,6 +40,7 @@ def install_infoblox():
 def create_ea_definitions():
      with provide_charm_instance() as charm_class:
          charm_class.create_ea_definitions()
+     status_set('active', 'Unit is ready')
      set_flag('infoblox.ready')
 
 

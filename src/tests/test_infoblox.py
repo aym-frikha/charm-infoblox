@@ -1,5 +1,7 @@
 import logging
 import unittest
+import requests
+
 from zaza.utilities import (
     cli as cli_utils,
     generic as generic_utils,
@@ -10,6 +12,9 @@ from zaza.utilities import (
 net_name = 'private'
 private_subnet = "192.168.1.0/24"
 vm_name = "test_infoblox"
+infoblox_ip = "172.27.32.7"
+infoblox_username = "admin"
+infoblox_password = "infoblox"
 
 def setup_network():
 
@@ -46,10 +51,11 @@ def setup_network():
         private_subnet,
         ip_version=4)
 
-class CirrosGuestCreateTest(unittest.TestCase):
-    """Tests to launch a cirros image."""
+class InfobloxFunctionalities(unittest.TestCase):
+
 
     def test_vm_creation(self):
+        """Tests to launch a cirros image."""
         cli_utils.setup_logging()
         keystone_session = openstack_utils.get_overcloud_keystone_session()
         # Retrieve necessary clients
@@ -77,3 +83,12 @@ class CirrosGuestCreateTest(unittest.TestCase):
             nova_client.servers,
             instance.id,
             expected_status='ACTIVE')
+
+    def test_infoblox_api(self):
+        """Tests existing data inside infoblox appliance."""
+        session = requests.Session()
+        session.auth = (infoblox_username, infoblox_password)
+        session.verify = False
+        url = 'https://' + infoblox_ip + '/wapi/v1.1/'
+        r = session.get(url + 'network')
+        self.assertEqual(r.json()[0]['network'], private_subnet)
