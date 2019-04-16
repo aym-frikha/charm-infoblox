@@ -4,8 +4,6 @@ import requests
 
 from zaza.utilities import (
     cli as cli_utils,
-    generic as generic_utils,
-    juju as juju_utils,
     openstack as openstack_utils,
 )
 
@@ -16,14 +14,13 @@ infoblox_ip = "172.27.32.7"
 infoblox_username = "admin"
 infoblox_password = "infoblox"
 
-def setup_network():
 
+def setup_network():
     cli_utils.setup_logging()
     keystone_session = openstack_utils.get_overcloud_keystone_session()
     # Retrieve necessary clients
     keystone_client = openstack_utils.get_keystone_session_client(
         keystone_session)
-    nova_client = openstack_utils.get_nova_session_client(keystone_session)
     neutron_client = openstack_utils.get_neutron_session_client(
         keystone_session)
     # Retrieve necessary variables
@@ -44,15 +41,15 @@ def setup_network():
         shared=False,
         network_type="gre")
 
-    project_subnet = openstack_utils.create_project_subnet(
+    openstack_utils.create_project_subnet(
         neutron_client,
         project_id,
         project_network,
         private_subnet,
         ip_version=4)
 
-class InfobloxFunctionalities(unittest.TestCase):
 
+class InfobloxFunctionalities(unittest.TestCase):
 
     def test_vm_creation(self):
         """Tests to launch a cirros image."""

@@ -12,11 +12,18 @@ class TestRegisteredHooks(test_utils.TestRegisteredHooks):
         # are meaningful for this interface: this is to handle regressions.
         # The keys are the function names that the hook attaches to.
         hook_set = {
-            'when': {
-                'configure_neutron_plugin': ('infoblox-neutron.connected', ),
+            'when_all': {
+                'configure_neutron': ('infoblox.installed',
+                                      'endpoint.neutron.connected', ),
+                'create_ea_definitions': (
+                    'endpoint.neutron.neutron_server_ready',
+                    'infoblox.installed', )
             },
             'when_not': {
-                'install_packages': ('infoblox.installed', ),
+                'install_infoblox': ('infoblox.installed', ),
+                'create_ea_definitions': ('infoblox.ready', ),
+                'configure_neutron': ('endpoint.neutron.configured', ),
+                'configure_designate': ('designate.configured',)
             },
         }
         # test that the hooks were registered via the
@@ -37,8 +44,8 @@ class TestHandlers(test_utils.PatchHelper):
 
     def test_install_packages(self):
         the_charm = self._patch_provide_charm_instance()
-        self.patch_object(handlers.reactive, 'set_state')
-        handlers.install_packages()
+        self.patch_object(handlers, 'set_flag')
+        handlers.install_infoblox()
         the_charm.install.assert_called_once_with()
         calls = [mock.call('infoblox.installed')]
-        self.set_state.assert_has_calls(calls)
+        self.set_flag.assert_has_calls(calls)

@@ -3,7 +3,6 @@ import subprocess
 import uuid
 
 import charms_openstack.charm
-import charmhelpers.core.hookenv as hookenv
 from charmhelpers.core.hookenv import (
     config,
     log,
@@ -32,7 +31,6 @@ class InfobloxCharm(charms_openstack.charm.OpenStackCharm):
 
     default_service = 'infoblox-ipam-agent'
 
-
     def install(self):
         log('Starting infoblox installation')
         installed = len(filter_installed_packages(self.packages)) == 0
@@ -51,7 +49,7 @@ class InfobloxCharm(charms_openstack.charm.OpenStackCharm):
         username = config('admin-user-name')
         password = config('admin-password')
         views = config('network-views')
-        subprocess.check_call(['systemctl', 'restart','infoblox-ipam-agent'])
+        subprocess.check_call(['systemctl', 'restart', 'infoblox-ipam-agent'])
         subprocess.check_call(
             ['create_ea_defs', '-u', username, '-p', password, '-pnv', views])
 
@@ -75,12 +73,11 @@ class InfobloxCharm(charms_openstack.charm.OpenStackCharm):
         else:
             log('Designate UUIDS not yet set by leader, skipping for now.')
             return None
-        return {
-            'pool': pool_uuid,
-            'pool_target': pool_target_uuid,
-            'nameserver': nameserver_uuid,
-            'host': config('grid-master-host'),
-            'wapi_version': config('wapi-version'),
-            'admin_username': config('admin-user-name'),
-            'admin_password': config('admin-user-password'),
-            }
+        return {'pool': pool_uuid,
+                'pool_target': pool_target_uuid,
+                'nameserver': nameserver_uuid,
+                'host': config('grid-master-host'),
+                'wapi_version': config('wapi-version'),
+                'admin_username': config('admin-user-name'),
+                'admin_password': config('admin-user-password'),
+                }
