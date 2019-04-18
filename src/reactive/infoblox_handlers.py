@@ -12,9 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from charms.reactive import endpoint_from_flag
-from charms.reactive import when, when_not, when_all
-from charms.reactive import set_flag
+from charms.reactive import (
+    endpoint_from_flag,
+    when,
+    when_not,
+    when_all,
+    set_flag
+)
 from charmhelpers.core.hookenv import status_set
 from charms_openstack.charm import (
     provide_charm_instance,
