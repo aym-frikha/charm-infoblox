@@ -1,4 +1,4 @@
-series: xenial
+series: bionic
 relations:
 - - nova-compute:amqp
   - rabbitmq-server:amqp
@@ -43,13 +43,9 @@ services:
   glance:
     charm: cs:~openstack-charmers-next/glance
     num_units: 1
-    options:
-      openstack-origin: cloud:xenial-queens
   keystone:
     charm: cs:~openstack-charmers-next/keystone
     num_units: 1
-    options:
-      openstack-origin: cloud:xenial-queens
   mysql:
     charm: cs:~openstack-charmers-next/percona-cluster
     num_units: 1
@@ -58,14 +54,13 @@ services:
     charm: /home/ubuntu/dev/infoblox/charms/charm-neutron-api
     num_units: 1
     options:
-      openstack-origin: cloud:xenial-queens
       flat-network-providers: physnet1
   infoblox:
     charm: infoblox
     num_units: 0
-    series: xenial
+    series: bionic
     options:
-      source: ppa:canonical-infoblox/queens-stable
+      source: ppa:canonical-infoblox/queens-staging
       grid-master-host: 172.27.32.7
       grid-master-name: infoblox.localdomain
       admin-user-name: admin
@@ -79,7 +74,6 @@ services:
     num_units: 1
     options:
       network-manager: Neutron
-      openstack-origin: cloud:xenial-queens
   nova-compute:
     charm: cs:~openstack-charmers-next/nova-compute
     num_units: 1
@@ -88,7 +82,6 @@ services:
       enable-live-migration: true
       enable-resize: true
       migration-auth-type: ssh
-      openstack-origin: cloud:xenial-queens
   rabbitmq-server:
     charm: cs:~openstack-charmers-next/rabbitmq-server
     num_units: 1
