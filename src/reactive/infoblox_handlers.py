@@ -38,26 +38,27 @@ def install_infoblox():
     set_flag('infoblox.installed')
 
 
-@when_all('endpoint.neutron.neutron_server_ready',
-          'infoblox.installed')
+@when('infoblox.installed')
+@when('endpoint.neutron.connected')
 @when_not('infoblox.ready')
 def create_ea_definitions():
-    with provide_charm_instance() as charm_class:
-        charm_class.create_ea_definitions()
-    status_set('active', 'Unit is ready')
-    set_flag('infoblox.ready')
+    principal_neutron = \
+        endpoint_from_flag('endpoint.neutron.connected')
+    if principal_neutron.principal_charm_state():
+        with provide_charm_instance() as charm_class:
+            charm_class.create_ea_definitions()
+        status_set('active', 'Unit is ready')
+        set_flag('infoblox.ready')
 
 
 @when_all('infoblox.installed',
           'endpoint.neutron.connected')
-@when_not('endpoint.neutron.configured')
 def configure_neutron(principle):
     with provide_charm_instance() as charm_class:
         config = charm_class.get_neutron_conf()
         principal_neutron = \
             endpoint_from_flag('endpoint.neutron.connected')
         principal_neutron.configure_principal(config)
-    set_flag('endpoint.neutron.configured')
 
 
 @when('designate.connected')

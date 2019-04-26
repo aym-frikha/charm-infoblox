@@ -50,8 +50,7 @@ services:
     charm: cs:~openstack-charmers-next/percona-cluster
     num_units: 1
   neutron-api:
-    bindings:
-    charm: cs:~aym-frikha/charm-neutron-api-0
+    charm: cs:~aym-frikha/charm-neutron-api-1
     num_units: 1
     options:
       flat-network-providers: physnet1

@@ -16,7 +16,7 @@ class TestRegisteredHooks(test_utils.TestRegisteredHooks):
                 'configure_neutron': ('infoblox.installed',
                                       'endpoint.neutron.connected', ),
                 'create_ea_definitions': (
-                    'endpoint.neutron.neutron_server_ready',
+                    'endpoint.neutron.connected',
                     'infoblox.installed', )
             },
             'when_not': {
