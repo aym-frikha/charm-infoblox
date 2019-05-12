@@ -1,6 +1,5 @@
 import subprocess
 import uuid
-
 import charms_openstack.charm
 from charmhelpers.core.hookenv import (
     config,

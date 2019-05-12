@@ -31,34 +31,34 @@ use_defaults('update-status')
 
 
 @when_not('infoblox.installed')
-@when('endpoint.neutron.connected')
+@when('neutron.available')
 def install_infoblox():
     with provide_charm_instance() as charm_class:
         charm_class.install()
     set_flag('infoblox.installed')
 
 
-@when('infoblox.installed')
-@when('endpoint.neutron.connected')
-@when_not('infoblox.ready')
+@when_all('infoblox.installed',
+          'neutron.available',
+          'neutron.configured')
 def create_ea_definitions():
     principal_neutron = \
-        endpoint_from_flag('endpoint.neutron.connected')
-    if principal_neutron.principal_charm_state():
+        endpoint_from_flag('neutron.available')
+    if principal_neutron.principal_charm_state() == "True":
         with provide_charm_instance() as charm_class:
             charm_class.create_ea_definitions()
         status_set('active', 'Unit is ready')
-        set_flag('infoblox.ready')
 
 
 @when_all('infoblox.installed',
-          'endpoint.neutron.connected')
+          'neutron.available')
 def configure_neutron(principle):
     with provide_charm_instance() as charm_class:
         config = charm_class.get_neutron_conf()
         principal_neutron = \
-            endpoint_from_flag('endpoint.neutron.connected')
+            endpoint_from_flag('neutron.available')
         principal_neutron.configure_principal(config)
+        set_flag('neutron.configured')
 
 
 @when('designate.connected')

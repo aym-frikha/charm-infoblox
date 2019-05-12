@@ -14,15 +14,14 @@ class TestRegisteredHooks(test_utils.TestRegisteredHooks):
         hook_set = {
             'when_all': {
                 'configure_neutron': ('infoblox.installed',
-                                      'endpoint.neutron.connected', ),
+                                      'neutron.available', ),
                 'create_ea_definitions': (
-                    'endpoint.neutron.connected',
+                    'neutron.configured',
+                    'neutron.available',
                     'infoblox.installed', )
             },
             'when_not': {
                 'install_infoblox': ('infoblox.installed', ),
-                'create_ea_definitions': ('infoblox.ready', ),
-                'configure_neutron': ('endpoint.neutron.configured', ),
                 'configure_designate': ('designate.configured',)
             },
         }
