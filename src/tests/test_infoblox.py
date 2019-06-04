@@ -2,7 +2,7 @@ import logging
 import unittest
 import requests
 
-from zaza.utilities import (
+from zaza.openstack.utilities import (
     cli as cli_utils,
     openstack as openstack_utils,
 )

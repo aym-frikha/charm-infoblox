@@ -22,7 +22,9 @@ class TestRegisteredHooks(test_utils.TestRegisteredHooks):
             },
             'when_not': {
                 'install_infoblox': ('infoblox.installed', ),
-                'configure_designate': ('designate.configured',)
+                'configure_designate': ('designate.configured',),
+                'create_ea_definitions': ('create-ea-definitions.done',),
+                'configure_neutron': ('neutron.configured',)
             },
         }
         # test that the hooks were registered via the

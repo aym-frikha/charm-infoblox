@@ -17,7 +17,8 @@ from charms.reactive import (
     when,
     when_not,
     when_all,
-    set_flag
+    set_flag,
+    clear_flag
 )
 from charmhelpers.core.hookenv import status_set
 from charms_openstack.charm import (
@@ -41,6 +42,7 @@ def install_infoblox():
 @when_all('infoblox.installed',
           'neutron.available',
           'neutron.configured')
+@when_not('create-ea-definitions.done')
 def create_ea_definitions():
     principal_neutron = \
         endpoint_from_flag('neutron.available')
@@ -48,16 +50,19 @@ def create_ea_definitions():
         with provide_charm_instance() as charm_class:
             charm_class.create_ea_definitions()
         status_set('active', 'Unit is ready')
+        set_flag('create-ea-definitions.done')
 
 
 @when_all('infoblox.installed',
           'neutron.available')
+@when_not('neutron.configured')
 def configure_neutron(principle):
     with provide_charm_instance() as charm_class:
         config = charm_class.get_neutron_conf()
         principal_neutron = \
             endpoint_from_flag('neutron.available')
         principal_neutron.configure_principal(config)
+        clear_flag('create-ea-definitions.done')
         set_flag('neutron.configured')
 
 

@@ -38,7 +38,6 @@ relations:
   - neutron-api:neutron-api
 - - neutron-api:infoblox-neutron
   - infoblox:neutron
-
 services:
   glance:
     charm: cs:~openstack-charmers-next/glance
@@ -54,7 +53,7 @@ services:
     charm: cs:~openstack-charmers-next/percona-cluster
     num_units: 1
   neutron-api:
-    charm: cs:~aym-frikha/charm-neutron-api-3
+    charm: cs:~aym-frikha/charm-neutron-api-4
     num_units: 1
     options:
       openstack-origin: cloud:xenial-queens
