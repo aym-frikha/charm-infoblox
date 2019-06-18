@@ -50,7 +50,7 @@ services:
     charm: cs:~openstack-charmers-next/percona-cluster
     num_units: 1
   neutron-api:
-    charm: /home/ubuntu/dev/infoblox/charms/charm-neutron-api
+    charm: cs:~openstack-charmer-next/neutron-api
     num_units: 1
     options:
       flat-network-providers: physnet1

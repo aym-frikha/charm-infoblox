@@ -58,7 +58,7 @@ services:
     options:
       cluster_count: 3
   neutron-api:
-    charm: cs:~aym-frikha/charm-neutron-api-4
+    charm: cs:~openstack-charmer-next/neutron-api
     num_units: 3
     options:
       openstack-origin: cloud:xenial-queens
