@@ -58,7 +58,7 @@ services:
     options:
       cluster_count: 3
   neutron-api:
-    charm: cs:~openstack-charmer-next/neutron-api
+    charm: cs:~openstack-charmers-next/neutron-api
     num_units: 3
     options:
       openstack-origin: cloud:xenial-queens
@@ -70,7 +70,7 @@ services:
     series: xenial
     options:
       source: ppa:canonical-infoblox/queens-stable
-      grid-master-host: 172.27.32.7
+      grid-master-host: 172.27.32.5
       grid-master-name: infoblox.localdomain
       admin-user-name: admin
       admin-password: infoblox
